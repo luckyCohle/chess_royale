@@ -1,0 +1,22 @@
+{
+  "name": "backend",
+  "version": "1.0.0",
+  "main": "index.js",
+  "scripts": {
+    "build":"tsc -b",
+    "start":"node dist/src/index.js",
+    "dev":"tsc -b && node dist/src/index.js"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "type": "commonjs",
+  "description": "",
+  "dependencies": {
+    "@types/ws": "^8.18.0",
+    "chess.js": "^1.1.0",
+    "typescript": "^5.8.2",
+    "uuid": "^11.1.0",
+    "ws": "^8.18.1"
+  }
+}
