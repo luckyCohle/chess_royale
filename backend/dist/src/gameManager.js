@@ -38,7 +38,7 @@ class GameManager {
                     if (thisGame.player1 == socket) {
                         color = "w";
                     }
-                    let completeMove = Object.assign(Object.assign({}, message.move), { player: color });
+                    let completeMove = Object.assign(Object.assign({}, message.payload), { player: color });
                     thisGame.makeMove(socket, completeMove);
                 }
             }

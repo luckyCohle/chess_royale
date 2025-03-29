@@ -21,13 +21,13 @@ export class Game {
         this.moves = [];
         this.startTime = new Date();
         this.player1.send(JSON.stringify({
-            type: "init_Game",
+            type: messageType.Init_Game_done,
             payload: {
                 color: "white"
             }
         }))
         this.player2.send(JSON.stringify({
-            type: "init_Game",
+            type: messageType.Init_Game_done,
             payload: {
                 color: "black"
             }
@@ -45,11 +45,12 @@ export class Game {
         return;
         }
 
-        console.log("move is valid");
+        // console.log("move is valid");
         try {
             this.board.move(move);
         } catch (error) {
-            console.error(error)
+            console.log("\ninvalid move")
+            console.log("\n||||||||||||\n Error: "+error+"\n|||||||||||||\n")
         }
 
         if (this.board.isGameOver()) {
@@ -63,13 +64,13 @@ export class Game {
         }
         console.log("game is still on!");
         if (this.moves.length % 2 === 0) {
-            console.log("sending move to player1")
+            // console.log("sending move to player1")
             this.player2.send(JSON.stringify({
                 type: messageType.Move,
                 payload: move
             }))
         } else{
-            console.log("sending move to player2")
+            // console.log("sending move to player2")
             this.player1.send(JSON.stringify({
                 type: messageType.Move,
                 payload: move
@@ -78,6 +79,6 @@ export class Game {
         }
         this.moves.push(move);
         this.moveCount++;
-        console.log(this.moves)
+        // console.log(this.moves)
     }
 }

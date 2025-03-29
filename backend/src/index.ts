@@ -10,5 +10,6 @@ wss.on("connection",function connection(ws){
     manager.addUser(ws)
     ws.on("close",()=>{
         manager.removeUser(ws);
+        userCount--;
     })
 })

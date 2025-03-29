@@ -6,4 +6,5 @@ var messageType;
     messageType["Init_Game"] = "init_game";
     messageType["Move"] = "move";
     messageType["Game_Over"] = "game_over";
+    messageType["Init_Game_done"] = "init_success";
 })(messageType || (exports.messageType = messageType = {}));

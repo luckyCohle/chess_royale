@@ -1,5 +1,6 @@
 export enum messageType {
     Init_Game = "init_game",
     Move = "move",
-    Game_Over = "game_over"
+    Game_Over = "game_over",
+    Init_Game_done = "init_success"
 }

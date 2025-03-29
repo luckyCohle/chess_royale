@@ -44,7 +44,7 @@ export class GameManager {
                         color = "w";
                     }
                     let completeMove:moveType = {
-                        ...message.move,
+                        ...message.payload,
                         player:color
                     }
                     thisGame.makeMove(socket,completeMove);
