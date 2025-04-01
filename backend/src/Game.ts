@@ -81,4 +81,12 @@ export class Game {
         this.moveCount++;
         // console.log(this.moves)
     }
+    getMove(socket: WebSocket) {
+        socket.send(JSON.stringify({
+            type: messageType.Send_Moves,
+            payload: {
+                moves: this.moves
+            }
+        }))
+        }
 }
