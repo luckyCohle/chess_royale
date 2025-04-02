@@ -1,8 +1,11 @@
 "use client";
+import BeforeGamePannel from '@/components/BeforeGamePannel';
 import ChessBoard from '@/components/ChessBoard';
+import GamePannel from '@/components/GamePannel';
 import { useSocket } from '@/hooks/useSocket';
 import { messageHandler } from '@/utility/handleMessage';
 import { messageTypes } from '@/utility/message';
+import { moveType } from '@/utility/moveType';
 import { Chess } from 'chess.js';
 import React, { useEffect, useRef, useState } from 'react';
 
@@ -11,7 +14,9 @@ function Page() {
     const [chess, setChess] = useState(new Chess());
     const [board, setBoard] = useState(chess.board());
     const [prespective,setPrespective] = useState<"b"|"w">("w");
-    // const prespective = useRef<"b"|"w">("w");
+    const [gameStarted,setGameStarted] = useState<boolean>(false);
+    const [moves,setMoves] = useState<moveType[]>([]);
+
 
     useEffect(() => {
         if (!socket) return;
@@ -29,7 +34,7 @@ function Page() {
             return;
             }
             console.log("prespective:"+prespective);
-            messageHandler(event.data, chess, setChess, board, setBoard,prespective);
+            messageHandler(event.data, chess, setChess, board, setBoard,prespective,setMoves,setGameStarted);
         };
         return ()=>{
             socket.close()
@@ -43,6 +48,8 @@ function Page() {
     }
 
     function handleClick() {
+        setGameStarted(true);
+        console.log("gameStarted: "+gameStarted)
         socket?.send(JSON.stringify({ type: messageTypes.Init_Game }));
     }
 
@@ -52,20 +59,14 @@ function Page() {
                 {/* Chess Board - 2/3 of the space */}
                 <div className="md:col-span-2 flex justify-center">
                     <div className="border-4 border-gray-700 p-1 rounded-lg">
-                        <ChessBoard board={board} socket={socket} chess={chess} setBoard={setBoard} prespective={prespective} />
+                        <ChessBoard board={board} socket={socket} chess={chess} setMoves={setMoves}setBoard={setBoard} prespective={prespective} />
                     </div>
                 </div>
 
                 {/* Side Panel - 1/3 of the space */}
-                <div className="flex flex-col justify-center items-center space-y-4 bg-gray-800 p-6 rounded-lg shadow-md">
-                    <h2 className="text-2xl font-bold">Chess Royale</h2>
-                    <button
-                        onClick={handleClick}
-                        className="bg-blue-600 hover:bg-blue-700 text-white font-bold py-2 px-6 rounded-lg transition"
-                    >
-                        Play
-                    </button>
-                </div>
+                {
+                    gameStarted?<GamePannel moves={moves}/>:<BeforeGamePannel handleClick={handleClick}/>
+                }
             </div>
         </div>
     );

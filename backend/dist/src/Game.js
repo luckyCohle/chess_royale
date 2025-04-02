@@ -53,7 +53,7 @@ class Game {
             }));
             return;
         }
-        // console.log("game is still on!");
+        console.log("game is still on!");
         if (this.moves.length % 2 === 0) {
             // console.log("sending move to player1")
             this.player2.send(JSON.stringify({
@@ -71,6 +71,14 @@ class Game {
         this.moves.push(move);
         this.moveCount++;
         // console.log(this.moves)
+    }
+    getMove(socket) {
+        socket.send(JSON.stringify({
+            type: message_1.messageType.Send_Moves,
+            payload: {
+                moves: this.moves
+            }
+        }));
     }
 }
 exports.Game = Game;

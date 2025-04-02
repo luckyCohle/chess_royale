@@ -1,5 +1,6 @@
 import { boardType } from "@/utility/board";
 import { messageTypes } from "@/utility/message";
+import { moveType } from "@/utility/moveType";
 import { Chess, Color, PieceSymbol, Square } from "chess.js";
 import React, { Dispatch, RefObject, SetStateAction, useEffect, useState } from "react";
 import { json } from "stream/consumers";
@@ -8,11 +9,12 @@ interface propType {
   board: boardType,
   socket: WebSocket,
   chess: Chess,
+  prespective: "b" | "w",
   setBoard: Dispatch<SetStateAction<boardType>>,
-  prespective: "b" | "w"
+  setMoves: Dispatch<SetStateAction<moveType[]>>,
 }
 
-function ChessBoard({ board, socket, chess, setBoard, prespective }: propType) {
+function ChessBoard({ board, socket, chess, setBoard, prespective ,setMoves}: propType) {
     const [to, setTo] = useState<Square | null>(null);
     const [from, setFrom] = useState<Square | null>(null);
 
@@ -31,19 +33,28 @@ function ChessBoard({ board, socket, chess, setBoard, prespective }: propType) {
             setFrom(square);
         } else {
             const newMove = { from, to: squreCode };
-            
+            try {
             const result = chess.move(newMove);
             if (result) {
+                console.log("sending message")
                 setBoard(chess.board());
+                const move = {
+                    from:newMove.from,
+                    to:newMove.to,
+                    player: prespective,
+                }
+                setMoves(prevMoves => [...prevMoves, move]);
                 socket.send(JSON.stringify({
                     type: messageTypes.Move,
                     payload: newMove,
                 }));
+                setFrom(null);
             } else {
-                console.error("Invalid move:", newMove);
+                console.log("Invalid move:", newMove);
             }
-            
-            setFrom(null);
+            } catch (error) {
+                console.log('error occured \n error: '+error)
+            }
         }
     }
 

@@ -2,6 +2,7 @@ import { Chess } from "chess.js";
 import { Dispatch, RefObject, SetStateAction } from "react";
 import { boardType } from "./board";
 import { messageTypes } from "./message";
+import { moveType } from "./moveType";
 
 export const messageHandler = (
     stringMessage: string,
@@ -9,7 +10,9 @@ export const messageHandler = (
     setChess: Dispatch<SetStateAction<Chess>>,
     board: boardType,
     setBoard: Dispatch<SetStateAction<boardType>>,
-    prespective:"b"|"w"
+    prespective:"b"|"w",
+    setMoves:Dispatch<SetStateAction<moveType[]>>,
+    setGameStarted:Dispatch<SetStateAction<boolean>>
 ) => {
     const message = JSON.parse(stringMessage);
 
@@ -17,6 +20,9 @@ export const messageHandler = (
         case messageTypes.Init_Game:
             console.log("Game initialized");
             const newChess = new Chess();
+            setGameStarted((prev)=>{
+                return true;
+            })
             setChess(newChess);
             setBoard((prevBoard) => {
                 return chess.board();
@@ -31,15 +37,19 @@ export const messageHandler = (
                 to: message.payload.to,
             };
             console.log("Attempting move:", move);
-
             const result = chess.move(move)
+            let newMove ={
+                from:move.from,
+                to:move.to,
+                player:prespective,
+            }
+            setMoves((prevMoves)=>{
+                return [...prevMoves,newMove]
+    })
             if (result) {
                 setBoard((prevBoard) => {
-                    return playerColor === "w" ? chess.board() : [...chess.board()].reverse();
+                    return chess.board()
                 });
-                
-                // console.log("Move made successfully");
-                console.log("prespective:"+prespective)
             } else {
                 console.error("Invalid move:", move);
             }
