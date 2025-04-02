@@ -1,12 +1,15 @@
 "use client";
 import BeforeGamePannel from '@/components/BeforeGamePannel';
 import ChessBoard from '@/components/ChessBoard';
+import GameOverModal from '@/components/GameOverModal';
 import GamePannel from '@/components/GamePannel';
 import { useSocket } from '@/hooks/useSocket';
+import { gameOverDetailsType } from '@/utility/gameOverDetail';
 import { messageHandler } from '@/utility/handleMessage';
 import { messageTypes } from '@/utility/message';
 import { moveType } from '@/utility/moveType';
 import { Chess } from 'chess.js';
+import { set } from 'mongoose';
 import React, { useEffect, useRef, useState } from 'react';
 
 function Page() {
@@ -16,6 +19,14 @@ function Page() {
     const [prespective,setPrespective] = useState<"b"|"w">("w");
     const [gameStarted,setGameStarted] = useState<boolean>(false);
     const [moves,setMoves] = useState<moveType[]>([]);
+    const [isGameOver,setIsGameOver] = useState<boolean>(false);
+    const [gameOverDetail,setGameOverDetail] = useState<gameOverDetailsType>({
+        type:"draw",
+        reason:"agreement"
+    });
+    const [winner,setWinner] = useState<"b"|"w">("b");
+    const [drawRequested,setDrawRequested] = useState<boolean>(false);
+
 
 
     useEffect(() => {
@@ -27,13 +38,29 @@ function Page() {
             if( message.type==messageTypes.Init_Game_done){
             const color:string = message.payload.color;
             const colorChar = color.split("")[0] as "b"|"w";
-            // setPrespective(colorChar)
             setPrespective(colorChar)
-            console.log("color recieved:"+colorChar)
-            console.log(`prespective changed to ${prespective}`)
             return;
+            }else if (message.type == messageTypes.Draw) {
+                console.log('draw condition: '+message.payload.condition)
+                setGameOverDetail({
+                    type: "draw",
+                    reason: message.payload.condition,
+                })
+                setIsGameOver(true);
+                return;
+            }else if (message.type == messageTypes.Game_Over) {
+                console.log('winner: '+message.payload.winner)
+                console.log('condition: '+message.payload.condition)
+                setGameOverDetail({
+                    type: "game_over",
+                    reason: message.payload.condition,
+                })
+                setWinner(message.payload.winner )
+                setIsGameOver(true);
+                return;
+            }else if (message.type == messageTypes.Request_Draw) {
+                setDrawRequested(true);
             }
-            console.log("prespective:"+prespective);
             messageHandler(event.data, chess, setChess, board, setBoard,prespective,setMoves,setGameStarted);
         };
         return ()=>{
@@ -65,9 +92,11 @@ function Page() {
 
                 {/* Side Panel - 1/3 of the space */}
                 {
-                    gameStarted?<GamePannel moves={moves}/>:<BeforeGamePannel handleClick={handleClick}/>
+                    gameStarted?<GamePannel   drawRequested={drawRequested} setDrawRequested={setDrawRequested} prespective={prespective}socket={socket}moves={moves}/>:<BeforeGamePannel handleClick={handleClick}/>
                 }
             </div>
+            {/* Show the game over popup if game is over */}
+         <GameOverModal isOpen={isGameOver} winner={winner} onClose={()=>{setIsGameOver(false)} } type={gameOverDetail.type} reason={gameOverDetail.reason}/>
         </div>
     );
 }

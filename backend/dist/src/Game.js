@@ -7,6 +7,7 @@ const message_1 = require("../types/message");
 class Game {
     constructor(player1, player2) {
         this.moveCount = 0;
+        this.DrawRequests = new Set();
         this.id = (0, uuid_1.v4)();
         this.player1 = player1;
         this.player2 = player2;
@@ -45,12 +46,32 @@ class Game {
             console.log("\n||||||||||||\n Error: " + error + "\n|||||||||||||\n");
         }
         if (this.board.isGameOver()) {
-            this.player1.send(JSON.stringify({
-                type: message_1.messageType.Game_Over,
-                payload: {
-                    winner: this.board.turn() === "w" ? "black" : "white"
-                }
-            }));
+            if (this.board.isCheckmate()) {
+                const message = JSON.stringify({
+                    type: message_1.messageType.Game_Over,
+                    payload: {
+                        winner: this.board.turn() === "w" ? "black" : "white",
+                        winningCondition: message_1.winningConditions.Mate
+                    }
+                });
+                this.player1.send(message);
+                this.player2.send(message);
+            }
+            return;
+        }
+        if (this.board.isDraw()) {
+            if (this.board.isStalemate()) {
+                this.draw(message_1.drawConditions.StaleMate);
+            }
+            else if (this.board.isInsufficientMaterial()) {
+                this.draw(message_1.drawConditions.Insufficient_Material);
+            }
+            else if (this.board.isDrawByFiftyMoves()) {
+                this.draw(message_1.drawConditions.fifty_Moves);
+            }
+            else if (this.board.isThreefoldRepetition()) {
+                this.draw(message_1.drawConditions.Repetition);
+            }
             return;
         }
         console.log("game is still on!");
@@ -71,6 +92,45 @@ class Game {
         this.moves.push(move);
         this.moveCount++;
         // console.log(this.moves)
+    }
+    gameOver(socket, condition, winnningColor) {
+        if (condition == message_1.winningConditions.resign) {
+            const message = JSON.stringify({
+                type: message_1.messageType.Game_Over,
+                payload: {
+                    condition: message_1.winningConditions.resign,
+                    winner: winnningColor
+                }
+            });
+        }
+    }
+    RequestDraw(condition, socket) {
+        this.DrawRequests.add(socket);
+        if (this.DrawRequests.size == 2) {
+            this.draw(condition);
+            return;
+        }
+        console.log("forwarding request to the other player");
+        if (socket == this.player1) {
+            this.player2.send(JSON.stringify({
+                type: message_1.messageType.Request_Draw
+            }));
+        }
+        else {
+            this.player1.send(JSON.stringify({
+                type: message_1.messageType.Request_Draw
+            }));
+        }
+    }
+    draw(condition) {
+        const message = JSON.stringify({
+            type: message_1.messageType.Draw,
+            payload: {
+                condition: condition
+            }
+        });
+        this.player1.send(message);
+        this.player2.send(message);
     }
     getMove(socket) {
         socket.send(JSON.stringify({

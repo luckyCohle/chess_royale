@@ -18,6 +18,7 @@ class GameManager {
     }
     addHandler(socket) {
         socket.on("message", (data) => {
+            const thisGame = this.games.find(game => game.player1 == socket || game.player2 == socket);
             const message = JSON.parse(data.toString());
             if (message.type == message_1.messageType.Init_Game) {
                 if (this.pendingUser) {
@@ -27,6 +28,18 @@ class GameManager {
                 }
                 else {
                     this.pendingUser = socket;
+                }
+            }
+            if (message.type == message_1.messageType.Request_Draw) {
+                console.log("draw request recieved");
+                thisGame === null || thisGame === void 0 ? void 0 : thisGame.RequestDraw(message_1.drawConditions.Agreement, socket);
+            }
+            if (message.type == message_1.messageType.Game_Over) {
+                console.log("message: " + message);
+                if (message.payload.condition == message_1.winningConditions.resign) {
+                    console.log("inside nested if, the users array length:\n");
+                    console.log(this.User.length);
+                    this.User.map(user => user.send(JSON.stringify(message)));
                 }
             }
             if (message.type == message_1.messageType.Move) {

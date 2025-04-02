@@ -1,6 +1,6 @@
 import { WebSocket } from "ws"
 import { Game } from "./Game";
-import { messageType } from "../types/message";
+import { drawConditions, messageType, winningConditions } from "../types/message";
 import { moveType } from "../types/move";
 
 export class GameManager {
@@ -22,7 +22,9 @@ export class GameManager {
     }
 
     private addHandler(socket:WebSocket){
+
         socket.on("message",(data)=>{
+            const thisGame = this.games.find(game=> game.player1== socket || game.player2==socket)
             const message = JSON.parse(data.toString());
             if (message.type == messageType.Init_Game) {
                 if (this.pendingUser) {
@@ -33,7 +35,20 @@ export class GameManager {
                     this.pendingUser=socket;
                 }
             }
-            
+            if (message.type == messageType.Request_Draw) {
+                console.log("draw request recieved");
+                
+                    thisGame?.RequestDraw(drawConditions.Agreement,socket);
+                
+            }
+            if (message.type == messageType.Game_Over) {
+                console.log("message: "+message);
+                if (message.payload.condition == winningConditions.resign) {
+                    console.log("inside nested if, the users array length:\n");
+                    console.log(this.User.length);
+                    this.User.map(user=>user.send(JSON.stringify(message)));
+                }
+            }
             if (message.type == messageType.Move) {
                 console.log("control inside move message section");
                 // const thisGame = this.games.find(game=> game.id == message.gameId);
