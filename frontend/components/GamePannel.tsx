@@ -4,7 +4,8 @@ import React from 'react'
 function GamePannel({ moves }: { moves: moveType[] }) {
     const blackMoves = moves.filter((move) => move.player === "b");
     const whiteMoves = moves.filter((move) => move.player === "w");
-
+    console.log("whiteMove Length: "+whiteMoves.length)
+    console.log("blackMove Length: "+blackMoves.length)
     return (
         <div className="flex flex-col justify-center items-center space-y-4 bg-gray-800 p-6 rounded-lg shadow-md w-full">
             <div className="w-full h-full grid grid-rows-3">

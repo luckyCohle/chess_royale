@@ -37,15 +37,15 @@ export const messageHandler = (
                 to: message.payload.to,
             };
             console.log("Attempting move:", move);
-            const result = chess.move(move)
-            let newMove ={
+             let newMove ={
                 from:move.from,
                 to:move.to,
-                player:prespective,
+                player:playerColor,
             }
             setMoves((prevMoves)=>{
                 return [...prevMoves,newMove]
     })
+            const result = chess.move(move)
             if (result) {
                 setBoard((prevBoard) => {
                     return chess.board()
