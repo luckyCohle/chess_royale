@@ -1,3 +1,4 @@
+import { useGameStore } from "@/stateStore/chessStore";
 import { boardType } from "@/utility/board";
 import { messageTypes } from "@/utility/message";
 import { moveType } from "@/utility/moveType";
@@ -6,17 +7,13 @@ import React, { Dispatch, RefObject, SetStateAction, useEffect, useState } from 
 import { json } from "stream/consumers";
 
 interface propType {
-  board: boardType,
   socket: WebSocket,
-  chess: Chess,
-  prespective: "b" | "w",
-  setBoard: Dispatch<SetStateAction<boardType>>,
-  setMoves: Dispatch<SetStateAction<moveType[]>>,
 }
 
-function ChessBoard({ board, socket, chess, setBoard, prespective ,setMoves}: propType) {
+function ChessBoard({  socket}: propType) {
     const [to, setTo] = useState<Square | null>(null);
     const [from, setFrom] = useState<Square | null>(null);
+    const{chess,board,setBoard,addMove,perspective}= useGameStore()
 
     function getImage(piece: PieceSymbol, color: Color) {
         let returnValue = ""
@@ -37,13 +34,13 @@ function ChessBoard({ board, socket, chess, setBoard, prespective ,setMoves}: pr
             const result = chess.move(newMove);
             if (result) {
                 console.log("sending message")
-                setBoard(chess.board());
+                setBoard();
                 const move = {
                     from:newMove.from,
                     to:newMove.to,
-                    player: prespective,
+                    player: perspective,
                 }
-                setMoves(prevMoves => [...prevMoves, move]);
+                addMove(move);
                 socket.send(JSON.stringify({
                     type: messageTypes.Move,
                     payload: newMove,
@@ -60,7 +57,7 @@ function ChessBoard({ board, socket, chess, setBoard, prespective ,setMoves}: pr
 
     // Calculate square code based on perspective
     function getSquareCode(rowIndex: number, colIndex: number): string {
-        if (prespective === "w") {
+        if (perspective === "w") {
             // White perspective: a1 at bottom-left
             const rowNo = 8 - rowIndex;
             const colChar = String.fromCharCode(97 + colIndex);
@@ -74,14 +71,14 @@ function ChessBoard({ board, socket, chess, setBoard, prespective ,setMoves}: pr
     }
 
     // Get the board to render based on perspective
-    const displayBoard = prespective === "w" ? board : [...board].reverse().map(row => [...row].reverse());
+    const displayBoard = perspective === "w" ? board : [...board].reverse().map(row => [...row].reverse());
 
     return (
         <div className="grid grid-cols-8 gap-0 border-4 border-gray-700 w-full max-w-[45rem] mx-auto contain-content">
             {displayBoard.map((row, rowIndex) =>
                 row.map((square, colIndex) => {
                     const squreCode = getSquareCode(rowIndex, colIndex);
-                    const isLightSquare = prespective === "w" 
+                    const isLightSquare = perspective === "w" 
                         ? (rowIndex + colIndex) % 2 === 0
                         : (7 - rowIndex + 7 - colIndex) % 2 === 0;
 

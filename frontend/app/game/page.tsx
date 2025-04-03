@@ -4,64 +4,24 @@ import ChessBoard from '@/components/ChessBoard';
 import GameOverModal from '@/components/GameOverModal';
 import GamePannel from '@/components/GamePannel';
 import { useSocket } from '@/hooks/useSocket';
-import { gameOverDetailsType } from '@/utility/gameOverDetail';
+import { useGameStore } from '@/stateStore/chessStore';
 import { messageHandler } from '@/utility/handleMessage';
 import { messageTypes } from '@/utility/message';
-import { moveType } from '@/utility/moveType';
-import { Chess } from 'chess.js';
-import { set } from 'mongoose';
 import React, { useEffect, useRef, useState } from 'react';
 
 function Page() {
     const socket = useSocket();
-    const [chess, setChess] = useState(new Chess());
-    const [board, setBoard] = useState(chess.board());
-    const [prespective,setPrespective] = useState<"b"|"w">("w");
-    const [gameStarted,setGameStarted] = useState<boolean>(false);
-    const [moves,setMoves] = useState<moveType[]>([]);
-    const [isGameOver,setIsGameOver] = useState<boolean>(false);
-    const [gameOverDetail,setGameOverDetail] = useState<gameOverDetailsType>({
-        type:"draw",
-        reason:"agreement"
-    });
-    const [winner,setWinner] = useState<"b"|"w">("b");
-    const [drawRequested,setDrawRequested] = useState<boolean>(false);
+    const gameStore = useGameStore();
 
-
+    const {setGameStarted,setIsFindingOpponent,gameStarted}=gameStore
 
     useEffect(() => {
         if (!socket) return;
 
         socket.onmessage = (event) => {
             const message = JSON.parse(event.data);
-            console.log("message received:", message);
-            if( message.type==messageTypes.Init_Game_done){
-            const color:string = message.payload.color;
-            const colorChar = color.split("")[0] as "b"|"w";
-            setPrespective(colorChar)
-            return;
-            }else if (message.type == messageTypes.Draw) {
-                console.log('draw condition: '+message.payload.condition)
-                setGameOverDetail({
-                    type: "draw",
-                    reason: message.payload.condition,
-                })
-                setIsGameOver(true);
-                return;
-            }else if (message.type == messageTypes.Game_Over) {
-                console.log('winner: '+message.payload.winner)
-                console.log('condition: '+message.payload.condition)
-                setGameOverDetail({
-                    type: "game_over",
-                    reason: message.payload.condition,
-                })
-                setWinner(message.payload.winner )
-                setIsGameOver(true);
-                return;
-            }else if (message.type == messageTypes.Request_Draw) {
-                setDrawRequested(true);
-            }
-            messageHandler(event.data, chess, setChess, board, setBoard,prespective,setMoves,setGameStarted);
+            console.log("message received:", message);            
+            messageHandler(event.data,gameStore);
         };
         return ()=>{
             socket.close()
@@ -75,7 +35,8 @@ function Page() {
     }
 
     function handleClick() {
-        setGameStarted(true);
+        // setGameStarted(true);
+        setIsFindingOpponent(true);
         console.log("gameStarted: "+gameStarted)
         socket?.send(JSON.stringify({ type: messageTypes.Init_Game }));
     }
@@ -86,17 +47,17 @@ function Page() {
                 {/* Chess Board - 2/3 of the space */}
                 <div className="md:col-span-2 flex justify-center">
                     <div className="border-4 border-gray-700 p-1 rounded-lg">
-                        <ChessBoard board={board} socket={socket} chess={chess} setMoves={setMoves}setBoard={setBoard} prespective={prespective} />
+                        <ChessBoard  socket={socket} />
                     </div>
                 </div>
 
                 {/* Side Panel - 1/3 of the space */}
                 {
-                    gameStarted?<GamePannel   drawRequested={drawRequested} setDrawRequested={setDrawRequested} prespective={prespective}socket={socket}moves={moves}/>:<BeforeGamePannel handleClick={handleClick}/>
+                    gameStarted?<GamePannel  socket={socket}/>:<BeforeGamePannel socket={socket} handleClick={handleClick}/>
                 }
             </div>
             {/* Show the game over popup if game is over */}
-         <GameOverModal isOpen={isGameOver} winner={winner} onClose={()=>{setIsGameOver(false)} } type={gameOverDetail.type} reason={gameOverDetail.reason}/>
+         <GameOverModal handleClick={handleClick}/>
         </div>
     );
 }

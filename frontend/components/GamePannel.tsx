@@ -1,21 +1,13 @@
+import { useGameStore } from '@/stateStore/chessStore';
 import { drawConditions, messageTypes, winningConditions } from '@/utility/message';
 import { moveType } from '@/utility/moveType'
 import { Flag, Handshake, X } from 'lucide-react';
 import React, { Dispatch, SetStateAction } from 'react';
 
-function GamePanel({ 
-  moves, 
-  socket, 
-  prespective, 
-  drawRequested, 
-  setDrawRequested
-}: { 
-  moves: moveType[], 
+function GamePanel({ socket}: { 
   socket: WebSocket, 
-  prespective: "b" | "w",
-  drawRequested: boolean,
-  setDrawRequested: Dispatch<SetStateAction<boolean>>
 }) {
+    const {moves,perspective,drawRequested,setDrawRequested} = useGameStore()
     const blackMoves = moves.filter((move) => move.player === "b");
     const whiteMoves = moves.filter((move) => move.player === "w");
     
@@ -29,7 +21,7 @@ function GamePanel({
         socket.send(JSON.stringify({
             type: messageTypes.Game_Over,
             payload: {
-                winner: prespective === "b" ? "w" : "b",
+                winner: perspective === "b" ? "w" : "b",
                 condition: winningConditions.resign
             }
         }))

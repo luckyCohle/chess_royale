@@ -1,34 +1,43 @@
 import { Chess } from "chess.js";
-import { Dispatch, RefObject, SetStateAction } from "react";
-import { boardType } from "./board";
 import { messageTypes } from "./message";
-import { moveType } from "./moveType";
+import { useGameStore } from "@/stateStore/chessStore";
+import { GameState } from "@/stateStore/chessStore";
 
-export const messageHandler = (
-    stringMessage: string,
-    chess: Chess,
-    setChess: Dispatch<SetStateAction<Chess>>,
-    board: boardType,
-    setBoard: Dispatch<SetStateAction<boardType>>,
-    prespective:"b"|"w",
-    setMoves:Dispatch<SetStateAction<moveType[]>>,
-    setGameStarted:Dispatch<SetStateAction<boolean>>
-) => {
+
+export const messageHandler = (stringMessage: string, gameStore: GameState) => {
+    const {
+        chess,
+        setChess,
+        setBoard,
+        setGameStarted,
+        setWinner,
+        setIsFindingOpponent,
+        addMove,
+        setDrawRequested,
+        setPerspective,
+        setGameOverDetail,
+        setIsGameOver,
+    } = gameStore; 
+
     const message = JSON.parse(stringMessage);
 
     switch (message.type) {
         case messageTypes.Init_Game:
             console.log("Game initialized");
+            setIsFindingOpponent(true);
             const newChess = new Chess();
-            setGameStarted((prev)=>{
-                return true;
-            })
+            setGameStarted(true);
             setChess(newChess);
-            setBoard((prevBoard) => {
-                return chess.board();
-            });
-            
-            break; 
+            setBoard();
+            break;
+
+        case messageTypes.Init_Game_done:
+            setIsFindingOpponent(false);
+            setGameStarted(true);
+            const color: string = message.payload.color;
+            const colorChar = color.split("")[0] as "b" | "w";
+            setPerspective(colorChar);
+            break;
 
         case messageTypes.Move:
             const playerColor = message.payload.player;
@@ -37,26 +46,45 @@ export const messageHandler = (
                 to: message.payload.to,
             };
             console.log("Attempting move:", move);
-             let newMove ={
-                from:move.from,
-                to:move.to,
-                player:playerColor,
-            }
-            setMoves((prevMoves)=>{
-                return [...prevMoves,newMove]
-    })
-            const result = chess.move(move)
+            let newMove = {
+                from: move.from,
+                to: move.to,
+                player: playerColor,
+            };
+            addMove(newMove);
+            const result = chess.move(move);
             if (result) {
-                setBoard((prevBoard) => {
-                    return chess.board()
-                });
+                setBoard();
             } else {
                 console.error("Invalid move:", move);
             }
             break;
+
+        case messageTypes.Request_Draw:
+            setDrawRequested(true);
+            break;
+
+        case messageTypes.Draw:
+            console.log("draw condition: " + message.payload.condition);
+            setGameOverDetail({
+                type: "draw",
+                reason: message.payload.condition,
+            });
+            setIsGameOver(true);
+            setGameStarted(false);
+            break;
+
         case messageTypes.Game_Over:
-            console.log("Game Over");
-            break; 
+            console.log("winner: " + message.payload.winner);
+            console.log("condition: " + message.payload.condition);
+            setGameOverDetail({
+                type: "game_over",
+                reason: message.payload.condition,
+            });
+            setWinner(message.payload.winner);
+            setIsGameOver(true);
+            setGameStarted(false);
+            break;
 
         default:
             console.warn("Unknown message type:", message.type);

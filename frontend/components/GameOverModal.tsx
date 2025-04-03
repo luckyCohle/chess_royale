@@ -1,22 +1,16 @@
 import React from "react";
 import { X, Trophy, Handshake } from "lucide-react";
+import { useGameStore } from "@/stateStore/chessStore";
 
-interface GameOverModalProps {
-  isOpen: boolean;
-  onClose: () => void;
-  type: "draw" | "game_over";
-  winner?: "w" | "b";  // Optional: Only used when game_over
-  reason: string;
-}
-
-const GameOverModal: React.FC<GameOverModalProps> = ({ isOpen, onClose, type, winner, reason }) => {
-  if (!isOpen) return null;
+const GameOverModal = ({ handleClick }: { handleClick: () => void }) => {
+  const {isGameOver,gameOverDetail,winner,setIsGameOver,gameStarted} = useGameStore()
+  if (!isGameOver) return null;
 
   // Determine title and emoji based on type
   let title = "";
   let emoji = null;
   
-  if (type === "draw") {
+  if (gameOverDetail.type === "draw") {
     title = "Draw";
     emoji = <Handshake className="w-12 h-12 text-blue-400" />;
   } else if (winner === "w") {
@@ -36,7 +30,7 @@ const GameOverModal: React.FC<GameOverModalProps> = ({ isOpen, onClose, type, wi
       <div className="bg-gradient-to-br from-gray-900 to-gray-800 text-white p-8 rounded-xl shadow-2xl w-80 text-center border border-gray-700 relative animate-fadeIn">
         {/* Close button */}
         <button
-          onClick={onClose}
+          onClick={()=>{setIsGameOver(false)}}
           className="absolute top-3 right-3 text-gray-400 hover:text-white transition-colors"
           aria-label="Close"
         >
@@ -57,7 +51,7 @@ const GameOverModal: React.FC<GameOverModalProps> = ({ isOpen, onClose, type, wi
           
           {/* Reason with styled text */}
           <p className="text-lg text-gray-300 font-medium">
-            by {reason}
+            by {gameOverDetail.reason}
           </p>
           
           {/* Game end message */}
@@ -67,8 +61,8 @@ const GameOverModal: React.FC<GameOverModalProps> = ({ isOpen, onClose, type, wi
           
           {/* Play again button */}
           <button
-            onClick={onClose}
             className="mt-2 px-6 py-2 bg-blue-600 hover:bg-blue-500 text-white font-semibold rounded-lg transition-all transform hover:scale-105 shadow-lg"
+            onClick={handleClick}
           >
             Play Again
           </button>

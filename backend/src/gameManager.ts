@@ -28,12 +28,19 @@ export class GameManager {
             const message = JSON.parse(data.toString());
             if (message.type == messageType.Init_Game) {
                 if (this.pendingUser) {
+                    console.log("match completed creating game")
                     const game = new Game(this.pendingUser,socket)
                     this.games.push(game)
                     this.pendingUser=null;
                 }else{
+                    console.log("adding user to queue for game making")
                     this.pendingUser=socket;
                 }
+                return;
+            }
+            if (message.type = messageType.Cancel_init) {
+                console.log("cancel request recieved ")
+                this.pendingUser=null;
             }
             if (message.type == messageType.Request_Draw) {
                 console.log("draw request recieved");
