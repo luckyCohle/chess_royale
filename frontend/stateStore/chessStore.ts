@@ -1,5 +1,5 @@
 import { create } from "zustand";
-import { Chess } from "chess.js";
+import { Chess, PieceSymbol } from "chess.js";
 import { moveType } from "@/utility/moveType";
 import { gameOverDetailsType } from "@/utility/gameOverDetail";
 import { useSocket } from "@/hooks/useSocket";
@@ -15,6 +15,8 @@ export interface GameState {
     winner: "b" | "w";
     drawRequested: boolean;
     isFindingOpponent: boolean;
+    capturedByBlack:PieceSymbol[];
+    capturedByWhite:PieceSymbol[];
 
     // Actions
     setChess: (chess: Chess) => void;
@@ -28,6 +30,8 @@ export interface GameState {
     setWinner: (winner: "b" | "w") => void;
     setDrawRequested: (requested: boolean) => void;
     setIsFindingOpponent: (finding: boolean) => void;
+    addToCapturedByBlack:(piece:PieceSymbol)=>void;
+    addToCapturedByWhite:(piece:PieceSymbol)=>void;
 }
 
 export const useGameStore = create<GameState>((set) => ({
@@ -41,6 +45,8 @@ export const useGameStore = create<GameState>((set) => ({
     winner: "b",
     drawRequested: false,
     isFindingOpponent: false,
+    capturedByBlack:[],
+    capturedByWhite:[],
 
     // Actions
     setChess: (chess) => set({ chess, board: chess.board() }),
@@ -54,4 +60,6 @@ export const useGameStore = create<GameState>((set) => ({
     setWinner: (winner) => set({ winner }),
     setDrawRequested: (requested) => set({ drawRequested: requested }),
     setIsFindingOpponent: (finding) => set({ isFindingOpponent: finding }),
+    addToCapturedByBlack:(piece)=>set((state)=>({capturedByBlack:[...state.capturedByBlack,piece]})),
+    addToCapturedByWhite:(piece)=>set((state)=>({capturedByWhite:[...state.capturedByWhite,piece]})),
 }));

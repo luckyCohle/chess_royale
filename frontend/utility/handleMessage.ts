@@ -1,4 +1,4 @@
-import { Chess } from "chess.js";
+import { Chess, Square } from "chess.js";
 import { messageTypes } from "./message";
 import { useGameStore } from "@/stateStore/chessStore";
 import { GameState } from "@/stateStore/chessStore";
@@ -17,6 +17,8 @@ export const messageHandler = (stringMessage: string, gameStore: GameState) => {
         setPerspective,
         setGameOverDetail,
         setIsGameOver,
+        addToCapturedByBlack,
+        addToCapturedByWhite
     } = gameStore; 
 
     const message = JSON.parse(stringMessage);
@@ -52,9 +54,17 @@ export const messageHandler = (stringMessage: string, gameStore: GameState) => {
                 player: playerColor,
             };
             addMove(newMove);
+            const pieceAtTo = chess.get(newMove.to as Square)
             const result = chess.move(move);
             if (result) {
                 setBoard();
+                if (result.captured) {
+                    if (pieceAtTo?.color == "w") {
+                        addToCapturedByBlack(result.captured)
+                    }else{
+                        addToCapturedByWhite(result.captured)
+                    }
+                }
             } else {
                 console.error("Invalid move:", move);
             }

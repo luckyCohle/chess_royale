@@ -14,7 +14,7 @@ interface propType {
 function ChessBoard({ socket }: propType) {
     const [to, setTo] = useState<Square | null>(null);
     const [from, setFrom] = useState<Square | null>(null);
-    const { chess, board, setBoard, addMove, perspective } = useGameStore()
+    const { chess, board, setBoard, addMove, perspective ,capturedByBlack,capturedByWhite, addToCapturedByBlack,addToCapturedByWhite } = useGameStore()
 
 
     function handleSquareClick(square: Square | null, squreCode: string) {
@@ -27,10 +27,20 @@ function ChessBoard({ socket }: propType) {
     function handleMove(from: string, to: string) {
         try {
             console.log(`Attempting move from ${from} to ${to}`);
+            const pieceAtTo = chess.get(to as Square);
             const result = chess.move({ from, to });
             if (result) {
                 console.log("Move successful:", result);
                 setBoard();
+                if (result.captured) {
+                    if (pieceAtTo?.color == "w") {
+                        addToCapturedByBlack(result.captured)
+                        console.log(capturedByBlack)
+                    }else{
+                        addToCapturedByWhite(result.captured)
+                        console.log(capturedByWhite)
+                    }
+                }
                 addMove({ from, to, player: perspective });
                 socket.send(JSON.stringify({
                     type: messageTypes.Move,
@@ -40,18 +50,16 @@ function ChessBoard({ socket }: propType) {
                 console.log("Move returned null - invalid but no error thrown");
             }
         } catch (err) {
-            console.error("Invalid move error:", err);
-            // Reset selection to allow for new selection
+            console.log("Invalid move error:", err);
             setFrom(null);
         }
     }
 
 
-    // Get the board to render based on perspective
     const displayBoard = perspective === "w" ? board : [...board].reverse().map(row => [...row].reverse());
 
     return (
-        <div className="grid grid-cols-8 gap-0 border-4 border-gray-700 w-full max-w-[45rem] mx-auto contain-content">
+        <div className="grid grid-cols-8 gap-0 border-4 border-gray-700 w-full max-w-[45rem] max-h-[45rem] mx-auto contain-content">
             {displayBoard.map((row, rowIndex) =>
                 row.map((square, colIndex) => {
                     const squareCode = getSquareCode(rowIndex, colIndex,perspective);
@@ -65,12 +73,11 @@ function ChessBoard({ socket }: propType) {
                                 const from = item.square;
                                 const to = squareCode;
                                 
-                                // Enhanced debugging
-                                console.log("Drop detected!");
-                                // console.log("Piece:", item.piece);
+                                
+                                // console.log("Drop detected!");
                                 console.log("From square:", from);
                                 console.log("To square:", to);
-                                console.log("Current board state:", chess.fen());
+                                // console.log("Current board state:", chess.fen());
                                 
                                 handleMove(from, to); 
                             },
@@ -82,7 +89,7 @@ function ChessBoard({ socket }: propType) {
                     return (
                         <div
                             key={`${rowIndex}-${colIndex}`}
-                            className={`flex items-center justify-center h-16 w-16 md:h-20 md:w-20
+                            className={`flex items-center justify-center h-12 w-12 md:h-18 md:w-18
                                 text-lg font-bold uppercase ${isLightSquare ? "bg-gray-300" : "bg-green-700 text-white"}`}
                             ref={(node) => {
                                 if (node) dropRef(node);

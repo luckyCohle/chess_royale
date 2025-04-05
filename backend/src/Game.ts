@@ -59,8 +59,8 @@ export class Game {
                 const message = JSON.stringify({
                     type: messageType.Game_Over,
                     payload: {
-                        winner: this.board.turn() === "w" ? "black" : "white",
-                        winningCondition:winningConditions.Mate
+                        winner: this.board.turn() === "w" ? "b" : "w",
+                        condition:winningConditions.Mate
                     }
                 })
                 this.player1.send(message);

@@ -50,8 +50,8 @@ class Game {
                 const message = JSON.stringify({
                     type: message_1.messageType.Game_Over,
                     payload: {
-                        winner: this.board.turn() === "w" ? "black" : "white",
-                        winningCondition: message_1.winningConditions.Mate
+                        winner: this.board.turn() === "w" ? "b" : "w",
+                        condition: message_1.winningConditions.Mate
                     }
                 });
                 this.player1.send(message);
