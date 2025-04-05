@@ -26,6 +26,7 @@ export class GameManager {
         socket.on("message",(data)=>{
             const thisGame = this.games.find(game=> game.player1== socket || game.player2==socket)
             const message = JSON.parse(data.toString());
+            console.log(message)
             if (message.type == messageType.Init_Game) {
                 if (this.pendingUser) {
                     console.log("match completed creating game")
@@ -38,7 +39,7 @@ export class GameManager {
                 }
                 return;
             }
-            if (message.type = messageType.Cancel_init) {
+            if (message.type == messageType.Cancel_init) {
                 console.log("cancel request recieved ")
                 this.pendingUser=null;
             }
@@ -58,7 +59,7 @@ export class GameManager {
             }
             if (message.type == messageType.Move) {
                 console.log("control inside move message section");
-                // const thisGame = this.games.find(game=> game.id == message.gameId);
+                console.log(message.payload);
                 const thisGame = this.games.find(game=> game.player1== socket || game.player2==socket)
                 if (thisGame) {
                     let color = "b";

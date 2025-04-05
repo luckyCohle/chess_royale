@@ -46,7 +46,7 @@ export class Game {
         return;
         }
 
-        // console.log("move is valid");
+        console.log("move is valid");
         try {
             this.board.move(move);
         } catch (error) {
@@ -83,13 +83,13 @@ export class Game {
         }
         console.log("game is still on!");
         if (this.moves.length % 2 === 0) {
-            // console.log("sending move to player1")
+            console.log("sending move to player1")
             this.player2.send(JSON.stringify({
                 type: messageType.Move,
                 payload: move
             }))
         } else{
-            // console.log("sending move to player2")
+            console.log("sending move to player2")
             this.player1.send(JSON.stringify({
                 type: messageType.Move,
                 payload: move

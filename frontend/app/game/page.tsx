@@ -8,10 +8,9 @@ import { useGameStore } from '@/stateStore/chessStore';
 import { messageHandler } from '@/utility/handleMessage';
 import { messageTypes } from '@/utility/message';
 import React, { useEffect, useRef, useState } from 'react';
-
 function Page() {
     const socket = useSocket();
-    const gameStore = useGameStore();
+     const gameStore = useGameStore();
 
     const {setGameStarted,setIsFindingOpponent,gameStarted}=gameStore
 
@@ -42,7 +41,7 @@ function Page() {
     }
 
     return (
-        <div className="flex justify-center items-center min-h-screen bg-gray-900 text-white p-4">
+             <div className="flex justify-center items-center min-h-screen bg-gray-900 text-white p-4">
             <div className="max-w-screen-lg w-full grid grid-cols-1 md:grid-cols-3 gap-6">
                 {/* Chess Board - 2/3 of the space */}
                 <div className="md:col-span-2 flex justify-center">
