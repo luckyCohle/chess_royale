@@ -109,6 +109,8 @@ export class Game {
                     winner:winnningColor
                 }
             })
+            this.player1.send(message);
+            this.player2.send(message);
         }
     }
     RequestDraw(condition:drawConditionType,socket:WebSocket) {

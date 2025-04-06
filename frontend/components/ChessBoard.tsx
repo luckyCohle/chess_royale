@@ -18,6 +18,10 @@ function ChessBoard({ socket }: propType) {
 
 
     function handleSquareClick(square: Square | null, squreCode: string) {
+        if(chess.turn()!= perspective){
+            console.log("you don't own the piece \n invalid Move!")
+            return;
+        }
         possibleDestSetter(square)
         if (!from) {
             setFrom(square);           
@@ -39,6 +43,10 @@ function ChessBoard({ socket }: propType) {
     }
     function handleMove(from: string, to: string) {
         try {
+            if(chess.turn()!= perspective){
+                console.log("you don't own the piece \n invalid Move!")
+                return;
+            }
             console.log(`Attempting move from ${from} to ${to}`);
             const pieceAtTo = chess.get(to as Square);
             const result = chess.move({ from, to });

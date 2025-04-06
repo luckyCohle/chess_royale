@@ -9,6 +9,7 @@ export const messageHandler = (stringMessage: string, gameStore: GameState) => {
         chess,
         setChess,
         setBoard,
+        setNewBoard,
         setGameStarted,
         setWinner,
         setIsFindingOpponent,
@@ -30,12 +31,15 @@ export const messageHandler = (stringMessage: string, gameStore: GameState) => {
             const newChess = new Chess();
             setGameStarted(true);
             setChess(newChess);
-            setBoard();
+            setNewBoard()
+            // setBoard();
+
             break;
 
         case messageTypes.Init_Game_done:
             setIsFindingOpponent(false);
             setGameStarted(true);
+            setNewBoard()
             const color: string = message.payload.color;
             const colorChar = color.split("")[0] as "b" | "w";
             setPerspective(colorChar);

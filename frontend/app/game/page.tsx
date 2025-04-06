@@ -13,7 +13,7 @@ function Page() {
     const socket = useSocket();
      const gameStore = useGameStore();
 
-    const {setGameStarted,setIsFindingOpponent,gameStarted,perspective}=gameStore
+    const {gameStarted,perspective,setIsGameOver,setIsFindingOpponent}=gameStore
 
     useEffect(() => {
         if (!socket) return;
@@ -38,6 +38,7 @@ function Page() {
     function handleClick() {
         // setGameStarted(true);
         setIsFindingOpponent(true);
+        setIsGameOver(false);
         console.log("gameStarted: "+gameStarted)
         socket?.send(JSON.stringify({ type: messageTypes.Init_Game }));
     }

@@ -27,7 +27,8 @@ function Piece({ piece, square,isPossibleDest }: PieceProps) {
   }, [drag]);
 
   return (
-    <div className={`${isPossibleDest?"flex justify-center items-center  aspect-squar border-black/20 border-3  rounded-full":""}`}>
+    <div className={`${isPossibleDest?"flex justify-center items-center  aspect-squar border-black/20 border-3  rounded-full":""}
+    ${isDragging?"opacity-0":""}`}>
       <img
       ref={imgRef}
       src={piece} // Using the piece prop directly as in your original code

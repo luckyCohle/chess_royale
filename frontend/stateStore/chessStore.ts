@@ -22,6 +22,7 @@ export interface GameState {
     // Actions
     setChess: (chess: Chess) => void;
     setBoard: () => void;
+    setNewBoard:()=>void
     setPerspective: (perspective: "b" | "w") => void;
     setGameStarted: (started: boolean) => void;
     setMoves: (moves: moveType[]) => void;
@@ -54,6 +55,7 @@ export const useGameStore = create<GameState>((set) => ({
     // Actions
     setChess: (chess) => set({ chess, board: chess.board() }),
     setBoard: () => set((state) => ({ board: state.chess.board() })),
+    setNewBoard: () => set((state) => ({ board: new Chess().board() })),
     setPerspective: (perspective) => set({ perspective }),
     setGameStarted: (started) => set({ gameStarted: started }),
     setMoves: (moves) => set({ moves }),
