@@ -5,9 +5,10 @@ import { DragItem } from "@/utility/drag";
 interface PieceProps {
   piece: string;
   square: string;
+  isPossibleDest:boolean
 }
 
-function Piece({ piece, square }: PieceProps) {
+function Piece({ piece, square,isPossibleDest }: PieceProps) {
   // Use the current square as a dependency for useDrag to ensure it updates
   const [{ isDragging }, drag] = useDrag(() => ({
     type: "piece",
@@ -26,7 +27,8 @@ function Piece({ piece, square }: PieceProps) {
   }, [drag]);
 
   return (
-    <img
+    <div className={`${isPossibleDest?"flex justify-center items-center  aspect-squar border-black/20 border-3  rounded-full":""}`}>
+      <img
       ref={imgRef}
       src={piece} // Using the piece prop directly as in your original code
       alt={`Chess piece ${piece}`}
@@ -36,6 +38,7 @@ function Piece({ piece, square }: PieceProps) {
         cursor: 'grab'
       }}
     />
+    </div>
   );
 }
 

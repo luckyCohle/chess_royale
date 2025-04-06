@@ -24,7 +24,8 @@ function Page() {
             messageHandler(event.data,gameStore);
         };
         return ()=>{
-            socket.close()
+            // socket.close()
+            socket.onmessage = null;
         }
     }, [socket]);
 

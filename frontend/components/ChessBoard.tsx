@@ -14,15 +14,28 @@ interface propType {
 function ChessBoard({ socket }: propType) {
     const [to, setTo] = useState<Square | null>(null);
     const [from, setFrom] = useState<Square | null>(null);
-    const { chess, board, setBoard, addMove, perspective ,capturedByBlack,capturedByWhite, addToCapturedByBlack,addToCapturedByWhite } = useGameStore()
+    const { chess, board, perspective ,capturedByBlack,capturedByWhite,possibleDestSquares,setPossibleDestSquares,setBoard, addMove, addToCapturedByBlack,addToCapturedByWhite } = useGameStore()
 
 
     function handleSquareClick(square: Square | null, squreCode: string) {
+        possibleDestSetter(square)
         if (!from) {
-            setFrom(square);
+            setFrom(square);           
         } else {
             handleMove(from, squreCode)
+            setFrom(null);
         }
+        console.log("from: "+from)
+    }
+    function possibleDestSetter(square:Square|null) {
+        if (square) {
+            const availableMoves = chess.moves({square,verbose:true});
+            const availableSquares = availableMoves.map((move)=>{
+                return(move.to)
+            })
+            setPossibleDestSquares(availableSquares)
+            //  console.log(availableMoves)
+           }
     }
     function handleMove(from: string, to: string) {
         try {
@@ -32,6 +45,7 @@ function ChessBoard({ socket }: propType) {
             if (result) {
                 console.log("Move successful:", result);
                 setBoard();
+                setPossibleDestSquares([]);
                 if (result.captured) {
                     if (pieceAtTo?.color == "w") {
                         addToCapturedByBlack(result.captured)
@@ -52,6 +66,7 @@ function ChessBoard({ socket }: propType) {
         } catch (err) {
             console.log("Invalid move error:", err);
             setFrom(null);
+            // setPossibleDestSquares([]);
         }
     }
 
@@ -66,6 +81,8 @@ function ChessBoard({ socket }: propType) {
                     const isLightSquare = perspective === "w"
                         ? (rowIndex + colIndex) % 2 === 0
                         : (7 - rowIndex + 7 - colIndex) % 2 === 0;
+
+                        const isPossibleDest:boolean = possibleDestSquares.includes(squareCode as Square);
                  
                         const [{ isOver }, dropRef] = useDrop({
                             accept: "piece",
@@ -97,7 +114,9 @@ function ChessBoard({ socket }: propType) {
 
                             onClick={() => handleSquareClick(square?.square ?? null, squareCode)}
                         >
-                            {square ? <Piece piece={getImage(square.type, square.color)} square={squareCode} /> : ""}
+                            {square ? <Piece piece={getImage(square.type, square.color)} isPossibleDest={isPossibleDest} square={squareCode} />
+                             : isPossibleDest?
+                             <div className="aspect-square w-2/5 bg-black rounded-full opacity-20"></div> :""}
                         </div>
                     );
                 })

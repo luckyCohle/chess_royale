@@ -16,9 +16,6 @@ function CapturedPieces({ show }: CapturedPiecesProps) {
   const pieceColor = show === "capturedByBlack" ? "w" : "b";
   let totalPieceValue = 0;
   let totalOppositePieceValue=0;
-  console.log("captured by black\n")
-  console.log(capturedByBlack);
-  console.log("")
   
   // Sort pieces by value (pawn, knight/bishop, rook, queen)
   const pieceValue = {
