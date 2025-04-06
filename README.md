@@ -1,80 +1,81 @@
-♟️ Real-Time Multiplayer Chess Game
-A full-stack, real-time multiplayer chess game built with WebSockets and React. This project allows two players to connect, play chess in real-time, request draws, resign, and handle all official chess rules like checkmate, stalemate, and more.
+# ♟️ Chess-Royale
 
-🖼️ Demo
-Add a link or gif/screenshots here once deployed!
+A full-stack, real-time multiplayer chess game built with WebSockets and React. Players can connect from anywhere, play chess in real-time, request draws, resign, and experience all official chess rules including checkmate, stalemate, and more.
 
-🔧 Tech Stack
-🧠 Backend
-Node.js
+![Chess Royale Demo](https://your-demo-gif-link-here.gif)
 
-TypeScript
+## ✨ Features
 
-WebSocket (ws)
+- ♟️ Real-time multiplayer chess with WebSocket communication
+- ✅ Complete chess rules validation via chess.js
+- 🔄 Synchronized game state across clients
+- 🎮 Intuitive drag-and-drop interface
+- 🤝 Draw offers and resignations
+- 🏁 Proper game ending conditions (checkmate, stalemate, repetition)
+- 💻 Responsive design for desktop and tablets
 
-chess.js – Game logic and rule validation
+## 🔧 Tech Stack
 
-🎨 Frontend
-React (or Next.js if applicable)
+### Backend
+- **Node.js** with **TypeScript** for type-safe server code
+- **WebSocket (ws)** for real-time bidirectional communication
+- **chess.js** for chess rule validation and game state management
 
-chess.js
+### Frontend
+- **React** with functional components and hooks
+- **TypeScript** for improved developer experience
+- **React DnD** for drag-and-drop chess pieces
+- **Tailwind CSS** for responsive, utility-first styling
+- **WebSocket API** for real-time communication with server
 
-TypeScript
+## 🚀 Getting Started
 
-WebSocket API
+### Prerequisites
+- Node.js (v14+)
+- npm or yarn
 
-Tailwind CSS / CSS Modules (based on your stack)
+### Installation
 
+1. **Clone the repository**
+```bash
+git clone https://github.com/yourusername/chess-royale.git
+cd chess-royale
+```
 
-🚀 Getting Started
-1. Clone the repository
-bash
-Copy
-Edit
-git clone https://github.com/yourusername/chess-game.git
-cd chess-game
-2. Setup Backend
-bash
-Copy
-Edit
+2. **Setup Backend**
+```bash
 cd backend
 npm install
-npx ts-node server.ts
-Starts WebSocket server at ws://localhost:8080
+npm run dev  # Starts WebSocket server on port 8080
+```
 
-Waits for two players to initiate a game
-
-3. Setup Frontend
-bash
-Copy
-Edit
+3. **Setup Frontend**
+```bash
 cd frontend
 npm install
-npm run dev
-Opens app at http://localhost:3000
+npm run dev  # Starts development server on port 3000
+```
 
-Connects to backend WebSocket
+4. **Open the application**
+- Navigate to http://localhost:3000 in your browser
+- Open another browser window/tab to simulate a second player
+- The game begins when both players connect
 
-Chessboard will appear when both players are connected
+## 🎮 How to Play
 
-🧩 Gameplay Features
-♟ Real-time multiplayer chess
+1. Wait for two players to connect
+2. White moves first (assigned randomly)
+3. Drag and drop pieces to make moves
+4. Use the game control buttons to:
+   - Offer a draw
+   - Resign the game
+   - View move history
 
-✅ Legal move validation via chess.js
+## 🔌 WebSocket Message Protocol
 
-🔁 Draw requests and agreement-based draws
+Chess-Royale uses a JSON-based protocol for communication between client and server:
 
-🏁 Game Over via checkmate, stalemate, repetition, resignation
-
-🔄 Move sync between clients
-
-💀 Auto-disconnect handling
-
-🔌 Message Protocol
-Example JSON Message
-json
-Copy
-Edit
+```json
 {
   "type": "Move",
   "payload": {
@@ -82,34 +83,72 @@ Edit
     "to": "e4"
   }
 }
-Types Used
-Type	Purpose
-Init_Game	Requests to enter matchmaking queue
-Cancel_init	Cancels matchmaking
-Init_Game_done	Confirms game start and player color
-Move	Sends a move
-Request_Draw	Requests a draw
-Draw	Confirms draw accepted
-Game_Over	Sends game result
+```
 
-🛠️ Future Improvements
-🔐 Authentication with JWT
+### Message Types
 
-💾 Persistent move history in DB (Mongo/Postgres)
+| Type | Direction | Purpose |
+|------|-----------|---------|
+| `Init_Game` | Client → Server | Request to enter matchmaking queue |
+| `Cancel_Init` | Client → Server | Cancel matchmaking request |
+| `Init_Game_Done` | Server → Client | Confirms game start with assigned color |
+| `Move` | Bidirectional | Send or receive a chess move |
+| `Request_Draw` | Bidirectional | Offer or receive a draw offer |
+| `Draw` | Bidirectional | Confirm draw acceptance |
+| `Game_Over` | Server → Client | Announce game result and reason |
 
-⏱ Chess clocks (Blitz/Bullet)
+## 📋 Project Structure
 
-👀 Spectator mode
+```
+chess-royale/
+├── backend/           # WebSocket server
+│   ├── src/
+│   │   ├── server.ts  # Main server entry point
+│   │   ├── game.ts    # Game logic implementation
+│   │   └── types.ts   # TypeScript type definitions
+│   └── package.json
+│
+├── frontend/          # React client
+│   ├── src/
+│   │   ├── components/
+│   │   │   ├── ChessBoard.tsx  # Chess board component
+│   │   │   ├── Piece.tsx       # Chess piece component
+│   │   │   └── GameControls.tsx # Game control buttons
+│   │   ├── utility/
+│   │   │   ├── websocket.ts    # WebSocket connection handling
+│   │   │   └── chessBoardUtils.ts # Helper functions
+│   │   └── App.tsx
+│   └── package.json
+│
+└── README.md
+```
 
+## 🛠️ Future Improvements
 
-📱 Mobile-friendly UI
+- 🔐 User authentication and accounts
+- 💾 Game history storage in database
+- ⏱️ Chess clocks (Blitz, Bullet, and Classical time controls)
+- 📊 Player ratings and leaderboards
+- 👀 Spectator mode for watching ongoing games
+- 📱 Mobile-optimized interface
+- 💬 In-game chat functionality
 
-🧑‍💻 Author
-Aayush Yadav (aka Lucky)
-Backend-focused full-stack dev, building cool multiplayer stuff.
-🎓 Engineering Student | 🧠 Passionate about chess & real-time systems
+## 🧑‍💻 Author
 
-Feel free to fork, contribute, and raise issues!
+**Aayush Yadav** (aka Lucky)
 
-📜 License
-MIT License
+Backend-focused full-stack developer building multiplayer experiences. Engineering student passionate about chess and real-time systems.
+
+## 🤝 Contributing
+
+Contributions are welcome! Feel free to open issues or submit pull requests.
+
+1. Fork the repository
+2. Create your feature branch (`git checkout -b feature/amazing-feature`)
+3. Commit your changes (`git commit -m 'Add some amazing feature'`)
+4. Push to the branch (`git push origin feature/amazing-feature`)
+5. Open a Pull Request
+
+## 📜 License
+
+This project is licensed under the MIT License - see the LICENSE file for details.
