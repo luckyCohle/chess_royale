@@ -4,7 +4,7 @@ import { Color, PieceSymbol, Square } from "chess.js";
 export const getImage=(piece: PieceSymbol, color: Color)=> {
         let returnValue = ""
         if (color == "w") {
-            returnValue = piece + ".png";
+            returnValue = piece.toUpperCase() + ".png";
         } else {
             returnValue = "b" + piece + ".png"
         }
