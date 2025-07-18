@@ -1,7 +1,8 @@
 import Image from "next/image";
 import Link from "next/link";
 
-export default function Home() {
+export default function Home() { 
+  alert("backend may take a little time to become active .Please wait for 1 minute")
   return (
     <div className="h-screen flex items-center justify-center px-4">
       <div className="container mx-auto">
