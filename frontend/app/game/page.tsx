@@ -14,7 +14,9 @@ function Page() {
      const gameStore = useGameStore();
 
     const {gameStarted,perspective,setIsGameOver,setIsFindingOpponent}=gameStore
-alert("backend may take a little time to become active .Please wait for 1 minute")
+    useEffect(()=>{
+        alert("backend may take a little time to become active .Please wait for 1 minute")
+    },[]);
     useEffect(() => {
         if (!socket) return;
 
