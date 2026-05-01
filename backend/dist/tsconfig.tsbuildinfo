@@ -1,1 +1,1 @@
-{"root":["../src/game.ts","../src/gamemanager.ts","../src/index.ts","../types/message.ts","../types/move.ts"],"version":"5.8.2"}
+{"root":["../src/index.ts","../src/db/pool.ts","../src/modules/game/game.ts","../src/modules/game/game.repository.ts","../src/modules/game/gamemanager.ts","../src/modules/user/user.controller.ts","../src/modules/user/user.repository.ts","../src/server/http/http.server.ts","../src/server/http/middleware.ts","../src/server/ws/ws.server.ts","../src/shared/types/message.ts","../src/shared/types/move.ts","../src/shared/types/user.ts"],"version":"5.8.2"}

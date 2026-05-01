@@ -113,7 +113,7 @@
   "include": [
       "src/**/*",
       "utils/**/*",
-      "types/**/*",
+      "src/shared/types/**/*",
       "interfaces/**/*"
     ]
 }

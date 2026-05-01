@@ -28,13 +28,22 @@ export default function Home() {
             </p>
 
             {/* Play Online Button */}
-            <div className="mt-6 flex justify-center md:justify-start">
-              <Link href={"/game"}>
+            <div className="mt-6 flex justify-between gap-2 md:justify-start">
+              <Link href={"/auth/login"}>
                   <button
                       className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-3 px-6 rounded-lg shadow-md transition duration-300 w-full md:w-auto"
                       aria-label="Play Online"                
               >
-                Play Online
+                Login to Play
+              </button>
+              </Link>
+              <p className="flex items-center justify-center text-xl">OR</p>
+              <Link href={"/game"}>
+                  <button
+                      className="bg-gray-100 hover:bg-gray-400 text-black font-bold py-3 px-6 rounded-lg shadow-md transition duration-300 w-full md:w-auto"
+                      aria-label="Play Online"                
+              >
+                Play as a guest
               </button>
               </Link>
             </div>
